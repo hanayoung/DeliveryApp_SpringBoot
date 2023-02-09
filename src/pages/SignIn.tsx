@@ -31,16 +31,17 @@ function SignIn({navigation}:SignInScreenProps){
       try{
         setLoading(true);
         console.log("config",Config.API_URL);
-        const res=await axios.post(`${Config.API_URL}/login`,{email,pwd}); // pwd는 해시화, 일방향 암호화
+        const res=await axios.post(`${Config.API_URL}/login`,{id:email,password:pwd}); // pwd는 해시화, 일방향 암호화
         console.log("data",res.data)
         Alert.alert("알림",'로그인되었습니다');
         dispatch(
           userSlice.actions.setUser({
             name:res.data.data.name,
-            email:res.data.data.email,
+            email:res.data.data.id,
             accessToken:res.data.data.accessToken,
           }),
         );
+        console.log("innn");
         await EncryptedStorage.setItem(
           'refreshToken',
           res.data.data.refreshToken,

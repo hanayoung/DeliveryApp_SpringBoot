@@ -14,9 +14,11 @@ function SignUp({navigation}:SignUpScreenProps){
     const [email,setEmail]=useState('');
     const [pwd,setPwd]=useState('');
     const [name,setName]=useState('');
+    const [id,setId]=useState('');
     const emailRef=useRef<TextInput|null>(null);
     const pwdRef=useRef<TextInput|null>(null);
     const nameRef=useRef<TextInput|null>(null);
+    const idRef=useRef<TextInput|null>(null);
     const canGoNext=email&&pwd&&name;
     const onSubmit=useCallback(async ()=>{
       if(loading){
@@ -31,6 +33,9 @@ function SignUp({navigation}:SignUpScreenProps){
       }
       if(!name||!name.trim()){
         return Alert.alert('알림','이름을 입력해주세요')
+      }
+      if(!id||!id.trim()){
+        return Alert.alert('알림','아이디를 입력해주세요');
       }
       if (
         !/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/.test(
@@ -48,7 +53,7 @@ function SignUp({navigation}:SignUpScreenProps){
       try{
         setLoading(true);
         console.log("config",Config.API_URL);
-        const res=await axios.post(`${Config.API_URL}/user`,{email,name,pwd}); // pwd는 해시화, 일방향 함호화
+        const res=await axios.post(`${Config.API_URL}/signup`,{id:id,email:email,name:name,password:pwd}); // pwd는 해시화, 일방향 함호화
         console.log("data",res.data)
       }catch(err:unknown){
         const errorResponse=(err as AxiosError).response
@@ -72,7 +77,9 @@ function SignUp({navigation}:SignUpScreenProps){
     const onChangeName=useCallback((text)=>{
         setName(text.trim());
     },[name])
-
+    const onChangeId=useCallback((text)=>{
+      setId(text.trim());
+  },[id])
     return (
     <DismissKeyboardView>
         <View style={styles.inputWrapper}>
@@ -104,10 +111,25 @@ function SignUp({navigation}:SignUpScreenProps){
             textContentType="name"
             ref={nameRef}
             onSubmitEditing={()=>{
-              pwdRef.current?.focus();
+              idRef.current?.focus();
             }}
             blurOnSubmit={false}
             />
+        </View>
+        <View style={styles.inputWrapper}>
+        <Text style={styles.label}>아이디</Text>
+        <TextInput 
+        style={styles.textInput}
+        value={id}
+        placeholder="아이디를 입력해주세요"
+        onChangeText={onChangeId}
+        autoComplete="username"
+        textContentType="username"
+        ref={idRef}
+        onSubmitEditing={()=>{
+          pwdRef.current?.focus();
+        }}
+        />  
         </View>
         <View style={styles.inputWrapper}>
         <Text style={styles.label}>비밀번호</Text>
